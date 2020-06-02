@@ -1,14 +1,16 @@
+import string
 from bencode_parser import *
-from request import *
 from torrent import *
 import random
+from peer import get_peers
 
 if __name__ == '__main__':
-    # file = open('test.txt','r')
+    peer_id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(20))
+
     file = open('debian-10.3.0-amd64-netinst.iso.torrent', 'rb').read()
     torrent = Torrent(decode(file))
-    request = Request(torrent)
-    peer_id = bytearray(random.getrandbits(8) for _ in range(20))
-    url = request.build_tracker_url(peer_id, 80)
-    print(url)
-    request.retrieve_peers(url)
+    url = torrent.build_tracker_url(peer_id, 80)
+    response = torrent.retrieve_response(url)
+    peers = get_peers(response)
+    [print("ip: {}, port: {}".format(p.ip,p.port)) for p in peers]
+
