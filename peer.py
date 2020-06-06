@@ -7,7 +7,7 @@ class Peer(object):
         self.port = port
 
 def get_peers(bencode):
-    ip_port = []
+    peers_list = []
     peer_len = 6
     ip_len = 4
     content = decode(bencode)
@@ -19,5 +19,5 @@ def get_peers(bencode):
         ip = ipaddress.IPv4Address(peers[i: i + ip_len])
         port = int.from_bytes(peers[i + ip_len:i + peer_len], "big")
         assert port <= 65535
-        ip_port.append(Peer(ip,port))
-    return ip_port
+        peers_list.append(Peer(ip,port))
+    return peers_list

@@ -5,12 +5,13 @@ class Handshake(object):
         self.info_hash = str.encode(info_hash)
         self.peer_id = str.encode(peer_id)
 
-def serialize(handshake):
-    buf = "".join(str(len(handshake.pstr)).encode("utf-8") + handshake.pstr + handshake.ext_flags + handshake.info_hash + handshake.peer_id )
-    return buf
+    def serialize(self):
+        buf = "".join(str(len(self.pstr)).encode("utf-8") + self.pstr + self.ext_flags + self.info_hash +
+                      self.peer_id )
+        return buf
 
-def deserialize(data):
-    info_hash = data[28:48]
-    peer_id=data[48:]
-    handshake = Handshake(info_hash,peer_id)
-    return handshake
+    def receive(self,stream):
+        data = stream.read()#TODO
+        self.info_hash = data[28:48]
+        self.peer_id=data[48:]
+        return data
