@@ -7,13 +7,14 @@ import socket
 class Client(object):
     BUFFER_SIZE = 1024
 
-    def __init__(self,socket_connection, peer, choked, bitfield, peer_id, info_hash):
-        self.bitfield = bitfield
+    def __init__(self, peer, info_hash, peer_id):
+        data, s = __perform_handshake__(peer, info_hash, peer_id)
+        self.bitfield = __receive_bitfield__(data)
         self.peer_id = peer_id
         self.info_hash = info_hash
-        self.socket_connection = socket_connection
+        self.socket = s
         self.peer = peer
-        self.choked = choked
+        self.choked = True
 
     def send_unchoke(self):
         message = Message(Message.UNCHOKE,None)
@@ -23,7 +24,7 @@ class Client(object):
 def __perform_handshake__(peer, info_hash, peer_id):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.settimeout(3.0)
-    s.connect(peer.ip,peer.port)
+    s.bind((peer.ip,peer.port))
 
     request = Handshake(info_hash, peer_id)
     s.send(request.serialize())
@@ -38,9 +39,4 @@ def __receive_bitfield__(data):
     if id != "Bitfield":
         raise ConnectionError(format("expected bitfield, got {}",id))
     return Bitfield(payload)
-
-def new_client(peer, peer_id,info_hash):
-    data, s = __perform_handshake__(peer, info_hash, peer_id)
-    bitfield = __receive_bitfield__(data)
-    return Client(s, peer, True, bitfield,peer_id,info_hash)
 

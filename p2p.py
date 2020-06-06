@@ -1,5 +1,5 @@
 from peer import get_peers
-from client import new_client
+from client import Client
 
 class WorkPiece(object):
     def __init__(self,index,length,hash):
@@ -11,12 +11,14 @@ def get_piece_length(torrent):
     return 0 # todo
 
 def start_worker(peer, torrent, work_queue, done_pieces):
-    client = new_client(peer,torrent.peer_id, torrent.info_hash)
+    client = Client(peer,torrent.peer_id, torrent.info_hash)
     client.send_unchoke()
-    client.send_interested()
+    #client.send_interested()
+
 
 
 def get_bounds(index):
+    return 0, 1 #TODO
 
 def download(torrent):
     work_queue = []

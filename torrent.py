@@ -1,6 +1,6 @@
 import hashlib
 import bencoding
-import message
+import requests
 import urllib.parse
 
 
@@ -59,5 +59,5 @@ class Torrent(object):
         #             "&peer_id=ABCDEFGHIJKLMNOPQRST&port=80" \
         #             "&uploaded=0&downloaded=0&compact=1&left=351272960"
 
-        r = message.get(url)
+        r = requests.get(url)
         return r.content

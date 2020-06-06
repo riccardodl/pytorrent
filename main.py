@@ -3,7 +3,8 @@ from bencode_parser import *
 from torrent import *
 import random
 from peer import get_peers
-import client
+from client import Client
+from p2p import download
 
 if __name__ == '__main__':
     peer_id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(20))
@@ -14,5 +15,11 @@ if __name__ == '__main__':
     response = torrent.retrieve_response(url)
     peers = get_peers(response)
     [print("ip: {}, port: {}".format(p.ip,p.port)) for p in peers]
-    worker = client.new_client(peers[0],peer_id,torrent.info_hash)
+
+    #This will go into p2p
+    worker = Client(peers[0],peer_id,torrent.info_hash)
+    worker.send_unchoke()
+    # then send interested, then start download pieces, then put them together
+    #download(torrent)
+
 
