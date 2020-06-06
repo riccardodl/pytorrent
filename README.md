@@ -1,10 +1,10 @@
 # pytorrent
 pytorrent is a minimalistic torrent client from command line.
 
-#WIP
+# WIP
 Please note this project is still a work in progress
 
-#TODO
+# TODO
 * Make it run!
 * Add unit tests
 * Add command line arguments (source-folder, destination-folder, max-workers???)
