@@ -8,8 +8,8 @@ class Client(object):
     BUFFER_SIZE = 1024
 
     def __init__(self, peer, info_hash, peer_id):
-        data, s = __perform_handshake__(peer, info_hash, peer_id)
-        self.bitfield = __receive_bitfield__(data)
+        raw_bitfield, s = __perform_handshake__(peer, info_hash, peer_id)
+        self.bitfield = __receive_bitfield__(raw_bitfield)
         self.peer_id = peer_id
         self.info_hash = info_hash
         self.socket = s
@@ -23,16 +23,19 @@ class Client(object):
 
 def __perform_handshake__(peer, info_hash, peer_id):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.settimeout(3.0)
-    s.bind((peer.ip,peer.port))
+    #s.settimeout(3.0)
+    addr =(str(peer.ip),peer.port)
+    s.connect(addr)
+    print(info_hash, peer_id)
 
-    request = Handshake(info_hash, peer_id)
-    s.send(request.serialize())
+    handshake = Handshake(info_hash, peer_id)
+    s.send(handshake.serialize())
     response = s.recv(Client.BUFFER_SIZE)
-    data = request.receive(response)
-    if request.infohash != request.info_hash:
+    print(response)
+    handshake_resp = handshake.receive(response)
+    if handshake_resp.info_hash != handshake.info_hash:
         raise ConnectionError("info hash mismatch")
-    return data, s
+    return handshake_resp.peer_id, s
 
 def __receive_bitfield__(data):
     id, payload = Message.receive(data)
