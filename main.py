@@ -17,9 +17,10 @@ if __name__ == '__main__':
     [print("ip: {}, port: {}".format(p.ip,p.port)) for p in peers]
 
     #This will go into p2p
-    worker = Client(peers[0],peer_id,torrent.info_hash)
+    worker = Client(peers[0],torrent.info_hash,peer_id)
     worker.send_unchoke()
     # then send interested, then start download pieces, then put them together
     #download(torrent)
+    #remove peers if they don't respond
 
 

@@ -10,6 +10,7 @@ class WorkPiece(object):
 def get_piece_length(torrent):
     return 0 # todo
 
+# Make a client for each peer
 def start_worker(peer, torrent, work_queue, done_pieces):
     client = Client(peer,torrent.peer_id, torrent.info_hash)
     client.send_unchoke()

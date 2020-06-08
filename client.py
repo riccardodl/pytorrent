@@ -3,13 +3,11 @@ from handshake import Handshake
 from message import Message
 import socket
 
-
+# A client handles the state between us and a peer
 class Client(object):
-
-
     def __init__(self, peer, info_hash, peer_id):
-        raw_bitfield = __perform_handshake__(peer, info_hash, peer_id)
-        self.bitfield = __receive_bitfield__(raw_bitfield)
+        self.__perform_handshake__(info_hash, peer_id)
+        self.bitfield = self.__receive_bitfield__()
         self.peer_id = peer_id
         self.info_hash = info_hash
         self.peer = peer
@@ -20,20 +18,19 @@ class Client(object):
         self.socket_connection.send(message.serialize())
 
 
-def __perform_handshake__(peer, info_hash, peer_id):
-    peer.connect()
-    handshake = Handshake(info_hash, peer_id)
-    peer.send(handshake.serialize())
-    test_rcv = peer.receive()
-    handshake_resp = handshake.deserialize(test_rcv)
-    if handshake_resp.info_hash != handshake.info_hash:
-        raise ConnectionError("info hash mismatch")
-    return handshake_resp.peer_id
+    def __perform_handshake__(self, info_hash, peer_id):
+        self.peer.connect()
+        handshake = Handshake(info_hash, peer_id)
+        self.peer.send(handshake.serialize())
+        handshake_resp = handshake.deserialize(self.peer.receive())
+        if handshake_resp.peer_id != handshake.peer_id:
+            raise ConnectionError("peer_id mismatch")
 
-def __receive_bitfield__(data):
-    id, payload = Message.receive(data)
-    if id != "Bitfield":
-        raise ConnectionError(format("expected bitfield, got {}",id))
-    return Bitfield(payload)
+    def __receive_bitfield__(self):
+        data = self.peer.receive()
+        id, payload = Message.receive(data)
+        if id != "Bitfield":
+            raise ConnectionError(format("expected bitfield, got {}", id))
+        return Bitfield(payload)
 
 

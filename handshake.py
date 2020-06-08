@@ -20,7 +20,8 @@ class Handshake(object):
 
     @classmethod
     def deserialize(cls, data):
-        len_pstr, pstr, ext_flags, info_hash, peer_id = unpack(">b 19s 8s 20s 20s", data)
+        RESPONSE_LEN = 68
+        len_pstr, pstr, ext_flags, info_hash, peer_id = unpack(">b 19s 8s 20s 20s", data[:RESPONSE_LEN])
         if len_pstr != len(cls.PSTR) or pstr != cls.PSTR:
             raise ValueError("incorrect or malformed pstr")
         return Handshake(info_hash, peer_id)

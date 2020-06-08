@@ -12,6 +12,7 @@ class Peer(object):
     def connect(self):
         try:
             self.socket = socket.create_connection((str(self.ip),self.port), timeout=3)
+            self.socket.setblocking(None)
             self.alive = True
         except Exception as e:
             print("Something went wrong while connecting to peer {} - {}".format(self.ip,e))
@@ -32,6 +33,7 @@ class Peer(object):
                 if len(buffer) <= 0:
                     break
                 data += buffer
+                #socket.error ???
             except Exception as e:
                 print("receive failed - {}".format(e))
                 break
