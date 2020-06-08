@@ -23,10 +23,9 @@ class Client(object):
 def __perform_handshake__(peer, info_hash, peer_id):
     peer.connect()
     handshake = Handshake(info_hash, peer_id)
-    test = handshake.serialize()
     peer.send(handshake.serialize())
-    response = peer.receive()
-    handshake_resp = handshake.receive(response)
+    test_rcv = peer.receive()
+    handshake_resp = handshake.deserialize(test_rcv)
     if handshake_resp.info_hash != handshake.info_hash:
         raise ConnectionError("info hash mismatch")
     return handshake_resp.peer_id

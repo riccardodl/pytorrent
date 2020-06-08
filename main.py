@@ -7,7 +7,7 @@ from client import Client
 from p2p import download
 
 if __name__ == '__main__':
-    peer_id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(20))
+    peer_id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(20)).encode("utf-8")
 
     file = open('debian-10.3.0-amd64-netinst.iso.torrent', 'rb').read()
     torrent = Torrent(decode(file))
