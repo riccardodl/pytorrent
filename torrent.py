@@ -3,6 +3,8 @@ import bencoding
 import requests
 import urllib.parse
 
+from requests import PreparedRequest
+
 
 class Torrent(object):
     def __init__(self, data):
@@ -25,16 +27,13 @@ class Torrent(object):
 
     def get_info_hash(self):
         info = bencoding.bencode(self.data[b'info'])
-        info_hash = hashlib.sha1(info).hexdigest()
+        info_hash = hashlib.sha1(info).digest()
         print(info_hash)
         return info_hash
 
     def build_tracker_url(self, peer_id, port):
-        # Every 2 characters of the infohash need to be spaced by a "%" inbetween
-        hash = self.info_hash
-        hack = ''.join("%" + i + hash[n + 1] for n, i in enumerate(hash) if n % 2 == 0)
         parameters = {
-            "info_hash": hack,
+            "info_hash": self.info_hash,
             "peer_id": peer_id,
             "port": str(port),
             "uploaded": str(0),
@@ -42,12 +41,9 @@ class Torrent(object):
             "compact": str(1),
             "left": str(self.length),
         }
-
-        headers = urllib.parse.urlencode(parameters, safe="%")
-        return self.announce.decode("utf-8") + "?" + headers
-        # req = PreparedRequest()
-        # req.prepare_url(self.torrent.announce, parameters)
-        # return req.url
+        req = PreparedRequest()
+        req.prepare_url(self.announce, parameters)
+        return req.url
 
     def retrieve_response(self, url):
         # works = "http://bttracker.debian.org:6969/announce?info_hash=%5a%80%62%c0%76%fa%85%e8%05%64%51%c0%d9" \
