@@ -1,8 +1,8 @@
 from struct import pack, unpack
 
-
 class Handshake(object):
     PSTR = b"BitTorrent protocol"
+    MSG_LEN = 68
 
     def __init__(self, info_hash, peer_id):
         self.ext_flags = bytearray(8)
@@ -20,8 +20,7 @@ class Handshake(object):
 
     @classmethod
     def deserialize(cls, data):
-        RESPONSE_LEN = 68
-        len_pstr, pstr, ext_flags, info_hash, peer_id = unpack(">b 19s 8s 20s 20s", data[:RESPONSE_LEN])
+        len_pstr, pstr, ext_flags, info_hash, peer_id = unpack(">b 19s 8s 20s 20s", data[:cls.MSG_LEN])
         if len_pstr != len(cls.PSTR) or pstr != cls.PSTR:
             raise ValueError("incorrect or malformed pstr")
         return Handshake(info_hash, peer_id)

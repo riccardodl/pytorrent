@@ -8,6 +8,7 @@ class Peer(object):
         self.port = port
         self.alive = False
         self.socket = None
+        self.__data = b''
 
     def connect(self):
         try:
@@ -24,20 +25,29 @@ class Peer(object):
             self.alive = False
             print("Failed to send message, marking connection ad dead")
 
-    def receive(self):
+    def receive(self,buf_len = -1):
         BUFFER_SIZE = 1024
-        data = b''
         while True:
             try:
                 buffer = self.socket.recv(BUFFER_SIZE)
                 if len(buffer) <= 0:
                     break
-                data += buffer
+                self.__data += buffer
                 #socket.error ???
             except Exception as e:
                 print("receive failed - {}".format(e))
                 break
-        return data
+
+        if buf_len == -1:
+            data = self.__data
+            self.__data = []
+            return data
+        elif len(self.__data) >= buf_len:
+            data = self.__data[:buf_len]
+            self.__data = self.__data[buf_len:]
+            return data
+        else:
+            raise BufferError("You are trying to read more bytes than the peer has sent.")
 
 def get_peers(bencode):
     peers_list = []

@@ -2,6 +2,8 @@ import hashlib
 import bencoding
 import requests
 import urllib.parse
+import random
+import string
 
 from requests import PreparedRequest
 
@@ -15,6 +17,8 @@ class Torrent(object):
         self.name = data[b'info'][b'name']
         self.announce = data[b'announce']
         self.piece_hashes = self.get_pieces()
+        self.peer_id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(20)).encode("utf-8")
+
 
     def get_pieces(self):
         info_string = self.data[b'info'][b'pieces']
