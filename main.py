@@ -12,7 +12,6 @@ if __name__ == '__main__':
     url = torrent.build_tracker_url(torrent.peer_id, 80)
     response = torrent.retrieve_response(url)
     peers = get_peers(response)
-    [print("ip: {}, port: {}".format(p.ip,p.port)) for p in peers]
 
     #This will go into p2p
     #worker = Client(peers[3],torrent.info_hash,peer_id)

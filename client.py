@@ -1,6 +1,6 @@
 from bitfield import Bitfield
 from handshake import Handshake
-from message import Message
+from message import Message, MessageCodes
 import socket
 
 # A client handles the state between us and a peer
@@ -14,8 +14,13 @@ class Client(object):
         self.choked = True
 
     def send_unchoke(self):
-        message = Message(Message.UNCHOKE,None)
-        self.socket_connection.send(message.serialize())
+        message = Message(MessageCodes.UNCHOKE, None)
+        self.choked = False
+        self.peer.send(message.serialize())
+
+    def send_interested(self):
+        message = Message(MessageCodes.INTERESTED, None)
+        self.peer.send(message.serialize())
 
 
     def __perform_handshake__(self, peer, info_hash, peer_id):
@@ -29,11 +34,11 @@ class Client(object):
         else:
             raise ConnectionAbortedError("No answer from this client...")
 
-    def __receive_bitfield__(self,peer):
+    def __receive_bitfield__(self, peer):
         data = peer.receive()
-        id, payload = Message.receive(data)
-        if id != "Bitfield":
-            raise ConnectionError(format("expected bitfield, got {}", id))
-        return Bitfield(payload)
+        msg = Message.deserialize(data)
+        if msg.id != MessageCodes.BITFIELD:
+            raise ConnectionError("expected BITFIELD, got {}".format(MessageCodes(msg.id).name))
+        return Bitfield(msg.message)
 
 
