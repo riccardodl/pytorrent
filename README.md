@@ -1,5 +1,5 @@
 # pytorrent
-pytorrent is a minimalistic torrent client from command line.
+pytorrent is a minimalistic torrent client from command line. Inspired by https://blog.jse.li/posts/torrent/. I wanted to implement the client described in the article using python instead.
 
 # WIP
 Please note this project is still a work in progress
